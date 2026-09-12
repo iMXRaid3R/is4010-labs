@@ -31,3 +31,17 @@ def guessing_game():
             # Correct guess: congratulate the player and end the loop
             print(f"Correct! Congratulations, you guessed {secret_number}!")
             break
+
+
+def main():
+    adjective = input("Enter an adjective: ")
+    noun = input("Enter a noun: ")
+    verb = input("Enter a verb: ")
+
+    print(generate_mad_lib(adjective, noun, verb))
+    print()
+    guessing_game()
+
+
+if __name__ == "__main__":
+    main()
