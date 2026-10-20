@@ -43,8 +43,10 @@ fn main() {
 /// assert_eq!(add(2, 3), 5);
 /// assert_eq!(add(-1, 1), 0);
 /// ```
-fn add(_a: i32, _b: i32) -> i32 {
-    todo!("Implement add")
+fn add(a: i32, b: i32) -> i32 {
+    // The last expression in a function body, written without a trailing
+    // semicolon, is the return value. No `return` keyword is needed.
+    a + b
 }
 
 /// Returns the product of `a` and `b`.
@@ -54,8 +56,9 @@ fn add(_a: i32, _b: i32) -> i32 {
 /// assert_eq!(multiply(3, 4), 12);
 /// assert_eq!(multiply(0, 99), 0);
 /// ```
-fn multiply(_a: i32, _b: i32) -> i32 {
-    todo!("Implement multiply")
+fn multiply(a: i32, b: i32) -> i32 {
+    // Same idea as `add`: the expression `a * b` is returned implicitly.
+    a * b
 }
 
 // ============================================================================
@@ -69,8 +72,11 @@ fn multiply(_a: i32, _b: i32) -> i32 {
 /// assert!(is_even(4));
 /// assert!(!is_even(7));
 /// ```
-fn is_even(_n: i32) -> bool {
-    todo!("Implement is_even")
+fn is_even(n: i32) -> bool {
+    // `%` is the remainder operator. An even number leaves no remainder when
+    // divided by 2. For negatives Rust keeps the sign (-3 % 2 == -1), so
+    // comparing against 0 is still correct, whereas `n % 2 == 1` would not be.
+    n % 2 == 0
 }
 
 // ============================================================================
@@ -85,8 +91,15 @@ fn is_even(_n: i32) -> bool {
 /// assert_eq!(max(3, 9), 9);
 /// assert_eq!(max(5, 5), 5);
 /// ```
-fn max(_a: i32, _b: i32) -> i32 {
-    todo!("Implement max")
+fn max(a: i32, b: i32) -> i32 {
+    // In Rust `if` is an expression, so it produces a value. Both branches
+    // must have the same type (i32 here), and that value is returned.
+    // When a == b the `else` branch runs, which is fine since either works.
+    if a > b {
+        a
+    } else {
+        b
+    }
 }
 
 // ============================================================================
@@ -100,8 +113,10 @@ fn max(_a: i32, _b: i32) -> i32 {
 /// assert_eq!(square(5), 25);
 /// assert_eq!(square(0), 0);
 /// ```
-fn square(_n: i32) -> i32 {
-    todo!("Implement square")
+fn square(n: i32) -> i32 {
+    // Multiplying a number by itself. A negative times a negative is positive,
+    // so square(-3) == 9.
+    n * n
 }
 
 // ============================================================================
@@ -115,8 +130,13 @@ fn square(_n: i32) -> i32 {
 /// assert_eq!(reverse_string("hello"), "olleh");
 /// assert_eq!(reverse_string(""), "");
 /// ```
-fn reverse_string(_s: &str) -> String {
-    todo!("Implement reverse_string")
+fn reverse_string(s: &str) -> String {
+    // `&str` is a borrowed view of text; we return an owned `String`.
+    // `.chars()` iterates over Unicode characters (not raw bytes, which could
+    // split a multi-byte character), `.rev()` walks that iterator backwards,
+    // and `.collect()` gathers the characters into a new `String`.
+    // An empty input yields an empty iterator, so "" comes back as "".
+    s.chars().rev().collect()
 }
 
 /// Joins words with the given separator.
@@ -126,8 +146,11 @@ fn reverse_string(_s: &str) -> String {
 /// assert_eq!(concat_with_separator(&["hello", "world"], "-"), "hello-world");
 /// assert_eq!(concat_with_separator(&[], ","), "");
 /// ```
-fn concat_with_separator(_words: &[&str], _sep: &str) -> String {
-    todo!("Implement concat_with_separator")
+fn concat_with_separator(words: &[&str], sep: &str) -> String {
+    // `words` is a slice: a borrowed view into a list of string slices.
+    // `.join(sep)` puts `sep` only *between* elements, so a single word gets
+    // no separator and an empty slice produces an empty `String`.
+    words.join(sep)
 }
 
 // ============================================================================
@@ -141,8 +164,18 @@ fn concat_with_separator(_words: &[&str], _sep: &str) -> String {
 /// assert_eq!(find_max_in_vec(&[1, 5, 3]), Some(5));
 /// assert_eq!(find_max_in_vec(&[]), None);
 /// ```
-fn find_max_in_vec(_numbers: &[i32]) -> Option<i32> {
-    todo!("Implement find_max_in_vec")
+fn find_max_in_vec(numbers: &[i32]) -> Option<i32> {
+    // `Option<i32>` is either `Some(value)` or `None`. Rust uses it instead
+    // of null so the caller is forced to handle the "no answer" case.
+    //
+    // `.iter()` yields references (`&i32`) to each element, and `.max()`
+    // returns `Option<&i32>`: `None` for an empty slice, otherwise
+    // `Some(&largest)`. `.copied()` turns `Option<&i32>` into `Option<i32>`
+    // by copying the number out of the reference.
+    //
+    // Starting from a guess like 0 would be wrong for all-negative input
+    // ([-5, -1, -10] would report 0); `.max()` only compares real elements.
+    numbers.iter().max().copied()
 }
 
 /// Returns the count of even numbers in the slice.
@@ -152,8 +185,13 @@ fn find_max_in_vec(_numbers: &[i32]) -> Option<i32> {
 /// assert_eq!(count_evens(&[1, 2, 3, 4]), 2);
 /// assert_eq!(count_evens(&[]), 0);
 /// ```
-fn count_evens(_numbers: &[i32]) -> usize {
-    todo!("Implement count_evens")
+fn count_evens(numbers: &[i32]) -> usize {
+    // `.filter()` keeps only the elements for which the closure returns true.
+    // The closure receives `&&i32` (a reference to the iterator's `&i32`),
+    // so `**n` dereferences twice to get the plain `i32` that `is_even` wants.
+    // `.count()` returns how many items survived, as a `usize` (Rust's type
+    // for sizes and lengths). Reusing `is_even` means 0 and negatives work too.
+    numbers.iter().filter(|n| is_even(**n)).count()
 }
 
 // ============================================================================
